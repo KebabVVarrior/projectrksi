@@ -1,0 +1,45 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beans & Brew | Главная</title>
+    <link rel="stylesheet" href="{% static 'coffee/style.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+<header>
+    <nav class="container">
+        <a href="{% url 'index' %}" class="logo">B<span>&</span>B</a>
+        <ul class="nav-links">
+            <li><a href="{% url 'index' %}" class="active">Главная</a></li>
+            <li><a href="{% url 'menu' %}">Меню</a></li>
+            <li><a href="{% url 'contact' %}">Контакты</a></li>
+            {% if user.is_authenticated %}
+                <li><a href="{% url 'logout' %}">Выйти</a></li>
+            {% else %}
+                <li><a href="{% url 'login' %}">Вход</a></li>
+                <li><a href="{% url 'register' %}">Регистрация</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+</header>
+
+<section class="hero-premium">
+    <div class="container hero-split">
+        <div class="hero-content">
+            <span class="subtitle">Искусство обжарки</span>
+            <h1>Кофе,<br> за которым<br> возвращаются</h1>
+            <p>Мы находим редкие лоты specialty кофе и раскрываем их истинный вкус в нашей собственной обжарочной лаборатории.</p>
+            <a href="{% url 'menu' %}" class="btn-premium">Исследовать меню</a>
+        </div>
+        <div class="hero-image-wrap">
+            <img src="https://images.unsplash.com/photo-1595434091143-b375ace5d516?q=80&w=1000&auto=format&fit=crop" alt="Свежесваренный кофе" class="hero-img">
+        </div>
+    </div>
+</section>
+
+<script src="{% static 'coffee/script.js' %}"></script>
+</body>
+</html>

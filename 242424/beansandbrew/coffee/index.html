@@ -1,0 +1,82 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beans & Brew</title>
+    <style>
+        /* ====== Общие стили ====== */
+        body { margin:0; font-family: Arial, sans-serif; background:#fdfcf8; color:#333; }
+        a { text-decoration:none; color: inherit; }
+        .container { width:90%; max-width:1200px; margin:0 auto; }
+        header { background:#fff; padding:20px 0; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
+        .logo { font-weight:bold; font-size:24px; color:#6b4226; }
+        .logo span { color:#c49b66; }
+        nav ul { list-style:none; display:flex; gap:20px; float:right; margin:0; }
+        nav li { display:inline; }
+        nav a { padding:5px 10px; transition:0.3s; }
+        nav a.active, nav a:hover { color:#c49b66; font-weight:bold; }
+
+        /* ====== Hero Section ====== */
+        .hero-premium { padding:60px 0; display:flex; justify-content:center; align-items:center; }
+        .hero-split { display:flex; flex-wrap:wrap; gap:40px; align-items:center; }
+        .hero-content { flex:1; min-width:300px; }
+        .subtitle { text-transform:uppercase; font-size:14px; letter-spacing:2px; color:#a17c52; }
+        h1 { font-size:48px; margin:10px 0; line-height:1.2; color:#42210b; }
+        p { font-size:18px; margin-bottom:20px; }
+        .btn-premium { display:inline-block; background:#c49b66; color:#fff; padding:10px 20px; border-radius:5px; transition:0.3s; }
+        .btn-premium:hover { background:#a17c52; }
+
+        .hero-image-wrap { flex:1; min-width:300px; }
+        .hero-img { width:100%; border-radius:10px; }
+
+        /* ====== Footer ====== */
+        footer { background:#42210b; color:#fff; text-align:center; padding:20px 0; margin-top:60px; }
+    </style>
+</head>
+<body>
+<header>
+    <div class="container">
+        <a href="{% url 'index' %}" class="logo">B<span>&</span>B</a>
+        <ul class="nav-links">
+            <li><a href="{% url 'index' %}" class="{% if request.resolver_match.url_name == 'index' %}active{% endif %}">Главная</a></li>
+            <li><a href="{% url 'menu' %}" class="{% if request.resolver_match.url_name == 'menu' %}active{% endif %}">Меню</a></li>
+            <li><a href="{% url 'contact' %}" class="{% if request.resolver_match.url_name == 'contact' %}active{% endif %}">Контакты</a></li>
+            {% if user.is_authenticated %}
+                <li><a href="{% url 'logout' %}">Выйти</a></li>
+            {% else %}
+                <li><a href="{% url 'login' %}">Войти</a></li>
+                <li><a href="{% url 'register' %}">Регистрация</a></li>
+            {% endif %}
+        </ul>
+        <div style="clear:both;"></div>
+    </div>
+</header>
+
+<main>
+<section class="hero-premium">
+    <div class="container hero-split">
+        <div class="hero-content">
+            <span class="subtitle">Искусство обжарки</span>
+            <h1>Кофе,<br> за которым<br> возвращаются</h1>
+            <p>Мы находим редкие лоты specialty кофе и раскрываем их истинный вкус.</p>
+            <a href="{% url 'menu' %}" class="btn-premium">Исследовать меню</a>
+        </div>
+        <div class="hero-image-wrap">
+            <img src="https://images.unsplash.com/photo-1595434091143-b375ace5d516?q=80&w=1000&auto=format&fit=crop" alt="Кофе" class="hero-img">
+        </div>
+    </div>
+</section>
+</main>
+
+<footer>
+    <p>&copy; 2026 Beans & Brew. Все права защищены.</p>
+</footer>
+
+<script>
+    // Здесь можно добавить JS, если потребуется
+    console.log("Beans & Brew UI готов!");
+</script>
+</body>
+</html>

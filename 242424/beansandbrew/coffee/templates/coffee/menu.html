@@ -1,0 +1,152 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Меню | Beans & Brew</title>
+    <link rel="stylesheet" href="{% static 'coffee/style.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body class="dark-bg">
+<header>
+    <nav class="container">
+        <a href="{% url 'index' %}" class="logo">B<span>&</span>B</a>
+        <ul class="nav-links">
+            <li><a href="{% url 'index' %}">Главная</a></li>
+            <li><a href="{% url 'menu' %}" class="active">Меню</a></li>
+            <li><a href="{% url 'contact' %}">Контакты</a></li>
+            {% if user.is_authenticated %}
+                <li><a href="{% url 'logout' %}">Выйти</a></li>
+            {% else %}
+                <li><a href="{% url 'login' %}">Вход</a></li>
+                <li><a href="{% url 'register' %}">Регистрация</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+</header>
+
+<main class="container page-content">
+    <div class="text-center-block">
+        <span class="subtitle">Карта вкусов</span>
+
+        <!-- Красивая форма поиска и фильтрации -->
+        <div class="menu-filter-wrapper">
+            <div class="search-field">
+                <input type="text" id="searchInput" placeholder="Название или ингредиенты..." autocomplete="off">
+                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+            </div>
+            <div class="category-tabs">
+                <button class="cat-btn active" data-cat="all">Все</button>
+                <button class="cat-btn" data-cat="espresso">Эспрессо</button>
+                <button class="cat-btn" data-cat="alternative">Альтернатива</button>
+                <button class="cat-btn" data-cat="author">Авторские</button>
+                <button class="cat-btn" data-cat="dessert">Десерты</button>
+            </div>
+        </div>
+
+        <h2 class="section-title">Классика и Авторские напитки</h2>
+    </div>
+
+    <div class="menu-premium-grid" id="menuGrid">
+        {% if items %}
+            {% for item in items %}
+                <div class="menu-card" data-category="{{ item.category }}" data-name="{{ item.name|lower }}">
+                    <div class="menu-card-header">
+                        <h3>{{ item.name }}</h3>
+                        <span class="dots"></span>
+                        <span class="price">{{ item.price }}</span>
+                    </div>
+                    <p>{{ item.description }}</p>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>Пока нет доступных напитков.</p>
+        {% endif %}
+    </div>
+</main>
+
+<script src="{% static 'coffee/script.js' %}"></script>
+
+<script>
+    // Мгновенная фильтрация меню
+    (function() {
+        const searchInput = document.getElementById('searchInput');
+        const catBtns = document.querySelectorAll('.cat-btn');
+        const menuCards = document.querySelectorAll('.menu-card');
+        const menuGrid = document.getElementById('menuGrid');
+
+        function filterMenu() {
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            const activeCat = document.querySelector('.cat-btn.active')?.dataset.cat || 'all';
+
+            let hasVisible = false;
+
+            menuCards.forEach(card => {
+                const category = card.dataset.category;
+                const name = card.dataset.name || card.querySelector('h3')?.innerText.toLowerCase() || '';
+                const description = card.querySelector('p')?.innerText.toLowerCase() || '';
+
+                const categoryMatch = (activeCat === 'all' || category === activeCat);
+                const searchMatch = (searchTerm === '' || name.includes(searchTerm) || description.includes(searchTerm));
+
+                if (categoryMatch && searchMatch) {
+                    card.style.display = '';
+                    hasVisible = true;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            // Показать сообщение, если ничего не найдено
+            let noResultsMsg = document.getElementById('noResultsMsg');
+            if (!hasVisible) {
+                if (!noResultsMsg) {
+                    noResultsMsg = document.createElement('div');
+                    noResultsMsg.id = 'noResultsMsg';
+                    noResultsMsg.className = 'no-results';
+                    noResultsMsg.innerHTML = '<p>😕 Ничего не найдено. Попробуйте изменить запрос.</p>';
+                    menuGrid.parentNode.insertBefore(noResultsMsg, menuGrid.nextSibling);
+                }
+                noResultsMsg.style.display = 'block';
+            } else if (noResultsMsg) {
+                noResultsMsg.style.display = 'none';
+            }
+        }
+
+        // Обработка ввода поиска
+        searchInput.addEventListener('input', filterMenu);
+
+        // Обработка кнопок категорий
+        catBtns.forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                catBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                filterMenu();
+            });
+        });
+
+        // Если в URL есть параметры фильтрации (от старой формы), можно их применить
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlSearch = urlParams.get('search');
+        const urlCategory = urlParams.get('category');
+        if (urlSearch) {
+            searchInput.value = urlSearch;
+        }
+        if (urlCategory && urlCategory !== '') {
+            const targetBtn = Array.from(catBtns).find(btn => btn.dataset.cat === urlCategory);
+            if (targetBtn) {
+                catBtns.forEach(b => b.classList.remove('active'));
+                targetBtn.classList.add('active');
+            }
+        }
+        // Применить фильтрацию после установки значений
+        filterMenu();
+    })();
+</script>
+
+</body>
+</html>
